@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  DISPONIVEL
+  EM_TROCA
+  TROCADO
+}
+
+model Usuario {
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  nome            String
+  cpf             String
+  email           String
+  senha           String
+  dataCadastro    DateTime
+  logradouro      String
+  numero          Int
+  cep             String
+  bairro          String
+  municipio       String
+
+}
+
+model ProdutoServico {
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  usuarioId       String      @db.ObjectId
+  nome            String
+  descricao       String
+  categoria       String
+  foto            String
+  dataPostagem    DateTime
+  status          String
+}
+
+model Mensagens {
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  usuarioId       String?     @db.ObjectId
+  mensagem        String
+  data            DateTime
+  
+}
+
+model Trocas {
+  id               String      @id @default(auto()) @map("_id") @db.ObjectId
+  produtoServicoId String?     @db.ObjectId
+  produtoServico   ProdutoServico     @relation(fields: [produtoServicoId], references: [id])
+  usuario1Ids      String[]     @db.ObjectId
+  usuario1         Usuario[]     @relation(fields:[usuarioIds]), references: [id])
+  usuario2Id       String?     @db.ObjectId
+  usuario2Id      Usuario     @relation(fields:[usuarioId]), references: [id])
+  status           Status     @default(DISPONIVEL)
+}
+
+model Avaliacoes {
+  id               String      @id @default(auto()) @map("_id") @db.ObjectId
+  usuarioId        String      @db.ObjectId
+  mensagem         String
+  data             DateTime
+
+}
+
+model API {
+  id               String      @id @default(auto()) @map("_id") @db.ObjectId
+  usuarioId        String      @db.ObjectId   
+  endpoint         String
+  localizacao      String
+  dataVerificacao  DateTime  
+}
+
